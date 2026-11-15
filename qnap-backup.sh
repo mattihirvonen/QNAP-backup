@@ -28,21 +28,20 @@ while getopts "hvlf:m:" opt; do
   case "$opt" in
   # ?) HELP=1 ;;
     h) HELP=1 ;;
-	l) LOGS=1 ;;
+    l) LOGS=1 ;;
     v) VERBOSE=1 ;;
     f) DIRFILE="$OPTARG" ;;
-	m) MOUNT="$OPTARG" ;;
+    m) MOUNT="$OPTARG" ;;
    \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
-
 shift $((OPTIND - 1))
 
 # Create backup directory into mount point
 BACKUP=$MOUNT/'BACKUP'
 
 # echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE BACKUP=$BACKUP"
-# echo "Remaining arguments: $*  -  1=$1  2=$2  3=$3"
+# echo "Remaining arguments[$#]: $*  -  1=$1  2=$2  3=$3"
 # exit
 
 #--------------------------------------------------------------
@@ -72,7 +71,7 @@ do_rsync () {
     if [ ! -f $LOGFILE ]; then
     echo "" > $LOGFILE
     sync -f   $LOGFILE
-	sleep 1
+    sleep 1
     fi
 
 #   Not yet find solution to problem:
@@ -89,7 +88,7 @@ do_rsync () {
     rsync -av \
           --whole-file --update \
           --exclude '.pio' --exclude '.git' --exclude '.idea' --exclude '.vscode' \
-		  --exclude '*.o'  --exclude '*.obj' \
+          --exclude '*.o'  --exclude '*.obj' \
           --exclude '.@__thumb' --exclude '.@__cache' \
           --backup --backup-dir=$BACKUP_DIR \
           --log-file=$LOGFILE \
@@ -128,7 +127,16 @@ check_backup_media () {
 
 #--------------------------------------------------------------
 
-check_backup_media    $MOUNT
+check_backup_media  $MOUNT
+
+if [ $# -gt 0 ]
+then
+    for source in $*
+    do
+    #   echo "Process backup: $source"
+        do_backup   $BACKUP   $source
+    done
+else
 
 # do_backup  $BACKUP  'raspi'
 # do_backup  $BACKUP  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
@@ -136,3 +144,5 @@ check_backup_media    $MOUNT
 
 # do_backup  $BACKUP  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
   do_backup  $BACKUP  '/share/Multimedia/2016_BensaJaPetrooli'
+
+fi
