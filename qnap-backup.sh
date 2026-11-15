@@ -16,31 +16,34 @@ MOUNT='/tmp/BACKUP-MEDIA'            # Development time:  fake for PC testing
 MOUNT='/share/HD-PZU3-black'         # Symlink point to:  external/DEV3902_1/
 MOUNT='/share/WD30-RED'              # Symlink point to:  external/DEV3804_1/
 
+BACKUP='BACKUP'                      # Backup destination directory name
+
 #--------------------------------------------------------------
 # Parse command line options
 
 VERBOSE=0
-DIRFILE=""
+SRCFILE=""
 HELP=0
 LOGS=0
 
-while getopts "hvlf:m:" opt; do
+while getopts "hvlm:b:s:" opt; do
   case "$opt" in
   # ?) HELP=1 ;;
     h) HELP=1 ;;
     l) LOGS=1 ;;
     v) VERBOSE=1 ;;
-    f) DIRFILE="$OPTARG" ;;
+    f) SRCFILE="$OPTARG" ;;
+    b) BACKUP="$OPTARG" ;;
     m) MOUNT="$OPTARG" ;;
    \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
 shift $((OPTIND - 1))
 
-# Create backup directory into mount point
-BACKUP=$MOUNT/'BACKUP'
+# Define backup destination directory name based on MOUNT point
+DESTINATION=$MOUNT/$BACKUP
 
-# echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE BACKUP=$BACKUP"
+# echo "HELP=$HELP VERBOSE=$VERBOSE SRCFILE=$SRCFILE DESTINATION=$DESTINATION"
 # echo "Remaining arguments[$#]: $*  -  1=$1  2=$2  3=$3"
 # exit
 
@@ -127,22 +130,54 @@ check_backup_media () {
 
 #--------------------------------------------------------------
 
+# Test does backup media (directory) exist?
 check_backup_media  $MOUNT
 
+# Get backup source directory names from command line arguments
 if [ $# -gt 0 ]
 then
     for source in $*
     do
     #   echo "Process backup: $source"
-        do_backup   $BACKUP   $source
+        do_backup   $DESTINATION   $source
     done
-else
-
-# do_backup  $BACKUP  'raspi'
-# do_backup  $BACKUP  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
-# do_backup  $BACKUP  '/media/sf_work/hdrcopy'
-
-# do_backup  $BACKUP  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
-  do_backup  $BACKUP  '/share/Multimedia/2016_BensaJaPetrooli'
-
 fi
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Process backup source directory list from text file
+if [ "$SRCFILE" = "" ]; then
+    exit 0
+fi
+
+# Check if file exists and is readable
+if [[ ! -f "$SRCFILE" ]]; then
+    echo "Error: File '$SRCFILE' does not exist."
+    exit 1
+fi
+
+if [[ ! -r "$SRCFILE" ]]; then
+    echo "Error: File '$SRCFILE' is not readable."
+    exit 1
+fi
+
+# Read file line by line
+while IFS= read -r line; do
+    # Skip empty lines
+    [[ -z "$line" ]] && continue
+
+    # Process each line
+    # echo "Line: $line"
+    do_backup  $DESTINATION  $line
+done < "$FILE_PATH"
+
+#---------------------------
+#developmenti time tests
+
+# do_backup  $DESTINATION  'raspi'
+# do_backup  $DESTINATION  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
+# do_backup  $DESTINATION  '/media/sf_work/hdrcopy'
+
+# do_backup  $DESTINATION  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
+# do_backup  $DESTINATION  '/share/Multimedia/2016_BensaJaPetrooli'
+
+
