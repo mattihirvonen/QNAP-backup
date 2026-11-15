@@ -128,7 +128,26 @@ check_backup_media () {
     fi
 }
 
+
+help () {
+    echo ""
+    echo "Usage: $0 [OPTIONS] [source1] [source2] ..."
+    echo ""
+    echo "Command line options:"
+    echo ""
+    echo "  -h             this help"
+    echo "  -s filename    file list for backup source directories"
+    echo "  -m dirname     backup device mount point directory name (default is '$MOUNT')"
+    echo "  -b dirname     backup directory name in backup mount point (default is 'BACKUP')"
+    echo ""
+}
+
 #--------------------------------------------------------------
+
+if [ $HELP -gt 0 ]; then
+    help
+    exit 0
+fi
 
 # Test does backup media (directory) exist?
 check_backup_media  $MOUNT
