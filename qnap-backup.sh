@@ -16,9 +16,6 @@ MOUNT='/tmp/BACKUP-MEDIA'            # Development time:  fake for PC testing
 MOUNT='/share/HD-PZU3-black'         # Symlink point to:  external/DEV3902_1/
 MOUNT='/share/WD30-RED'              # Symlink point to:  external/DEV3804_1/
 
-# Create backup directory into mount point
-BACKUP=$MOUNT/'BACKUP'
-
 #--------------------------------------------------------------
 # Parse command line options
 
@@ -27,20 +24,24 @@ DIRFILE=""
 HELP=0
 LOGS=0
 
-while getopts "hvlf:" opt; do
+while getopts "hvlf:m:" opt; do
   case "$opt" in
   # ?) HELP=1 ;;
     h) HELP=1 ;;
 	l) LOGS=1 ;;
     v) VERBOSE=1 ;;
     f) DIRFILE="$OPTARG" ;;
+	m) MOUNT="$OPTARG" ;;
    \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
 
 shift $((OPTIND - 1))
 
-# echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE"
+# Create backup directory into mount point
+BACKUP=$MOUNT/'BACKUP'
+
+# echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE BACKUP=$BACKUP"
 # echo "Remaining arguments: $*  -  1=$1  2=$2  3=$3"
 # exit
 
@@ -87,8 +88,9 @@ do_rsync () {
 
     rsync -av \
           --whole-file --update \
-          --exclude '.pio' --exclude '.git' --exclude '.idea' --exclude '.vscode' --exclude '*.o' \
-          --exclude '.@__thumb' \
+          --exclude '.pio' --exclude '.git' --exclude '.idea' --exclude '.vscode' \
+		  --exclude '*.o'  --exclude '*.obj' \
+          --exclude '.@__thumb' --exclude '.@__cache' \
           --backup --backup-dir=$BACKUP_DIR \
           --log-file=$LOGFILE \
           $SRC_DIR \
@@ -111,7 +113,7 @@ do_backup () {
 
 # Check here: Is backup media mounted ???
 # If media is not mounted, then print error and exit.
-# $MOUNT_POINT can be also symlink to directory.
+# $MOUNT_POINT can be also symlink to mount directory.
 check_backup_media () {
     MOUNT_POINT=$1
 
@@ -126,7 +128,7 @@ check_backup_media () {
 
 #--------------------------------------------------------------
 
-check_backup_media  $MOUNT
+check_backup_media    $MOUNT
 
 # do_backup  $BACKUP  'raspi'
 # do_backup  $BACKUP  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
