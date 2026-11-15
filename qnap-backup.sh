@@ -40,9 +40,9 @@ done
 
 shift $((OPTIND - 1))
 
-echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE"
-echo "Remaining arguments: $*  -  1=$1  2=$2  3=$3"
-exit
+# echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE"
+# echo "Remaining arguments: $*  -  1=$1  2=$2  3=$3"
+# exit
 
 #--------------------------------------------------------------
 # Some RSYNC options:
