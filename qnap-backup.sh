@@ -22,27 +22,26 @@ BACKUP=$MOUNT/'BACKUP'
 #--------------------------------------------------------------
 # Parse command line options
 
-verbose=0
-dirfile=""
-help=0
-logs=0
+VERBOSE=0
+DIRFILE=""
+HELP=0
+LOGS=0
 
-while getopts "hvl-f:" opt; do
+while getopts "hvlf:" opt; do
   case "$opt" in
-  # ?) help=1 ;;
-    h) help=1 ;;
-    v) verbose=1 ;;
-	l) logs=1 ;;
-    f) dirfile="$OPTARG" ;;
-    \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
+  # ?) HELP=1 ;;
+    h) HELP=1 ;;
+	l) LOGS=1 ;;
+    v) VERBOSE=1 ;;
+    f) DIRFILE="$OPTARG" ;;
+   \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
   esac
 done
 
 shift $((OPTIND - 1))
 
-echo "help=$help verbose=$verbose dirfile=$dirfile"
+echo "HELP=$HELP VERBOSE=$VERBOSE DIRFILE=$DIRFILE"
 echo "Remaining arguments: $*  -  1=$1  2=$2  3=$3"
-
 exit
 
 #--------------------------------------------------------------
