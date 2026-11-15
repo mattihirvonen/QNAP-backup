@@ -2,7 +2,7 @@
 #
 # Script template backup QNAP directories to external (USB) device
 # ToDo:
-# - get source directory list file from command line
+# - get source directory list file name from command line
 # - fix
 #     - Do not produce RSYNC log file to external QNAP NTFS destination
 #     - PC test run to /tmp FS produce RSYNC file properly
@@ -40,7 +40,19 @@ do_rsync () {
     DST_DIR=$1
     SRC_DIR=$2
 
-    LOGFILE=backup-$TIMESTAMP.log
+    LOGNAME=backup-$TIMESTAMP.log
+    LOGFILE=$DST_DIR/$LOGNAME
+
+    if [ ! -f $LOGFILE ]; then
+    echo "" > $LOGFILE
+    sync      $LOGFILE
+    fi
+
+#   Not yet find help to problem:
+#   -----------------------------
+#   ./qnap-backup.sh: line 47: /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory
+#   sync: can't open '/share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log': No such file or directory
+#   rsync: failed to open log-file /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory (2)
 
     # RSYNC might backup overwritten files
     BACKUP_DIR=$DST_DIR/BACKUP-rsync
@@ -52,7 +64,7 @@ do_rsync () {
           --exclude '.pio' --exclude '.git' --exclude '.idea' --exclude '.vscode' --exclude '*.o' \
           --exclude '.@__thumb' \
           --backup --backup-dir=$BACKUP_DIR \
-          --log-file=$DST_DIR/$LOGFILE \
+          --log-file=$LOGFILE \
           $SRC_DIR \
           $DST_DIR
 }
@@ -94,4 +106,5 @@ check_backup_media  $MOUNT
 # do_backup  $BACKUP  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
 # do_backup  $BACKUP  '/media/sf_work/hdrcopy'
 
-  do_backup  $BACKUP  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
+# do_backup  $BACKUP  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
+  do_backup  $BACKUP  '/share/Multimedia/2016_BensaJaPetrooli'
