@@ -3,6 +3,9 @@
 # Script template backup QNAP directories to external (USB) device
 # ToDo:
 # - get source directory list file from command line
+# - fix
+#     - Do not produce RSYNC log file to external QNAP NTFS destination
+#     - PC test run to /tmp FS produce RSYNC file properly
 
 #--------------------------------------------------------------
 # Mount point(s) for backup media
