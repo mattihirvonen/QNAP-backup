@@ -12,9 +12,9 @@
 # $MOUNT can be also symlink to directory.
 # Symlink name is same as NTFS "Volume Label" or Linux "Volume Name"
 
-MOUNT='/share/WD30-RED'              # Symlink point to:  external/DEV3804_1/
 MOUNT='/tmp/BACKUP-MEDIA'            # Development time:  fake for PC testing
 MOUNT='/share/HD-PZU3-black'         # Symlink point to:  external/DEV3902_1/
+MOUNT='/share/WD30-RED'              # Symlink point to:  external/DEV3804_1/
 
 # Create backup directory into mount point
 BACKUP=$MOUNT/'BACKUP'
@@ -45,11 +45,12 @@ do_rsync () {
 
     if [ ! -f $LOGFILE ]; then
     echo "" > $LOGFILE
-    sync      $LOGFILE
+    sync -f   $LOGFILE
+	sleep 1
     fi
 
-#   Not yet find help to problem:
-#   -----------------------------
+#   Not yet find solution to problem:
+#   ---------------------------------
 #   ./qnap-backup.sh: line 47: /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory
 #   sync: can't open '/share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log': No such file or directory
 #   rsync: failed to open log-file /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory (2)
