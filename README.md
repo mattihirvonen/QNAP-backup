@@ -10,15 +10,18 @@ features to backup or sync process).
 ## Usage and Command Line Options
 
 ```text
-Usage: ./qnap-backup.sh [OPTIONS] [SourceDir1] [SourceDir2] ...
+Usage: ./qnap-backup.sh [OPTIONS] [source1] [source2] ...
 
 Command line options:
 
   -h             this help
-  -s filename    text file for backup source directories list
+  -d             RSYNC --dry-run
+  -l             enable RSYNC log file
+  -v             enable RSYNC verbose
+  -B             enable RSYNC's own over write backup feature (to directory 'BACKUP-rsync')
   -m dirname     backup device mount point directory name (default is '/share/WD30-RED')
   -b dirname     backup directory name in backup mount point (default is 'BACKUP')
-
+  -s filename    text file for backup source directories list
 ```
 
 ## What to Exclue From Backup
@@ -100,13 +103,20 @@ CodeBlocks
 All data in "hidden" *.git* subdirectory is GIT's local "database" about project's state and history.
 If we exclude this data we also lost project's version control data (no good idea to exclude?).
 
+Note(s):
+
+- Each time make checkout from repository, file's modified time stamp change to checkout time.
+- RSYNC use calculated block check sums to detect file differences (regardless time stamps)
+
 
 ## ToDo:
 
-Fix:
-- Do not produce RSYNC log file to external QNAP NTFS destination
-- PC test run to /tmp FS produce RSYNC log file properly
+New command line switces and features
+- *\-v* to enable RSYNC verbose (done)
+- *\-d* to enable RSYNC *--dry-run* (done)
+- *\-s* change to use RSYNC's own *--files-from=FILE* feature
+- *\-e* add to use RSYNC's own *--exclude-from=FILE* feature
+- *\-i* add to use RSYNC's own *--include-from=FILE* feature
+- *\-E* add exclude pattern from command line
+- *\-I* add include pattern from command line
 
-Enhancements:
-- Build *rsync* command line by concatening bash shell script variables.
-  This allow more dynamic command line (and offer more features).

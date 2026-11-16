@@ -16,25 +16,33 @@ MOUNT='/tmp/BACKUP-MEDIA'            # Development time:  fake for PC testing
 MOUNT='/share/HD-PZU3-black'         # Symlink point to:  external/DEV3902_1/
 MOUNT='/share/WD30-RED'              # Symlink point to:  external/DEV3804_1/
 
-BACKUP='BACKUP'                      # Backup destination directory name
+BACKUP='BACKUP'                      # Backup destination directory name in $MOUNT
 
 #--------------------------------------------------------------
 # Parse command line options
 
-VERBOSE=0
 SRCFILE=""
+VERBOSE=""
+DRY_RUN=""
+UPDATE=""
 HELP=0
 LOGS=0
+BKUP=0;
 TEST=0
 
-while getopts "+hvlm:b:s:" opt; do
+backup
+
+while getopts "+hvdlm:bB:s:" opt; do
   case "$opt" in
   # ?) HELP=1 ;;
     +) TEST=1 ;;   # Undocumented command line switch for development test
     h) HELP=1 ;;
     l) LOGS=1 ;;
-    v) VERBOSE=1 ;;
-    f) SRCFILE="$OPTARG" ;;
+    B) BKUP=1 ;;
+    v) VERBOSE="-v" ;;
+    d) DRY_RUN="--dry-run" ;;
+    s) SRCFILE="$OPTARG" ;;
+    u) UPDATE="--update" ;;
     b) BACKUP="$OPTARG" ;;
     m) MOUNT="$OPTARG" ;;
    \?) echo "Unknown option: -$OPTARG" >&2; exit 1 ;;
@@ -89,16 +97,17 @@ do_rsync () {
     # Backup suffix (default ~ w/o --backup-dir)
     SUFFIX='.RSYNC'
 
-#   DRY_RUN="--dry-run"
-    VERBOSE="-v"
-    LOGDUMP="--log-file=$LOGFILE"
-    UPDATE="--update"
-    BACKUP="--backup --backup-dir=$BACKUP_DIR"
+    if [ $LOGS -gt 0 ] ; then
+        DO_LOG="--log-file=$LOGFILE"
+    fi
+    if [ $BKUP -gt 0 ] ; then
+        DO_BACKUP="--backup --backup-dir=$BACKUP_DIR"
+    fi
 
     EXCLUDE="--exclude '.@__thumb'"
     EXCLUDE="$EXCLUDE --exclude '.pio'"
 
-    COMMAND="rsync $DRY_RUN -a $VERBOSE --whole-file $UPDATE $LOGDUMP $BACKUP $EXCLUDE $SRC_DIR $DST_DIR"
+    COMMAND="rsync $DRY_RUN -a $VERBOSE --whole-file $UPDATE $DO_LOG $DO_BACKUP $EXCLUDE $SRC_DIR $DST_DIR"
 
     echo $COMMAND
     echo ""
@@ -152,9 +161,13 @@ help () {
     echo "Command line options:"
     echo ""
     echo "  -h             this help"
-    echo "  -s filename    text file for backup source directories list"
+    echo "  -d             RSYNC --dry-run"
+    echo "  -l             enable RSYNC log file"
+    echo "  -v             enable RSYNC verbose"
+    echo "  -B             enable RSYNC's own over write backup feature (to directory 'BACKUP-rsync')"
     echo "  -m dirname     backup device mount point directory name (default is '$MOUNT')"
-    echo "  -b dirname     backup directory name in backup mount point (default is 'BACKUP')"
+    echo "  -b dirname     backup directory name in backup mount point (default is '$BACKUP')"
+    echo "  -s filename    text file for backup source directories list"
     echo ""
 }
 
