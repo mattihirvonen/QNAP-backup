@@ -15,7 +15,7 @@ Usage: ./qnap-backup.sh [OPTIONS] [SourceDir1] [SourceDir2] ...
 Command line options:
 
   -h             this help
-  -s filename    text file for backup source directories list (rsync feature)
+  -s filename    text file for backup source directories list
   -m dirname     backup device mount point directory name (default is '/share/WD30-RED')
   -b dirname     backup directory name in backup mount point (default is 'BACKUP')
 
