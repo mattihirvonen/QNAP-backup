@@ -136,7 +136,7 @@ help () {
     echo "Command line options:"
     echo ""
     echo "  -h             this help"
-    echo "  -s filename    file list for backup source directories"
+    echo "  -s filename    text file for backup source directories list (rsync feature)"
     echo "  -m dirname     backup device mount point directory name (default is '$MOUNT')"
     echo "  -b dirname     backup directory name in backup mount point (default is 'BACKUP')"
     echo ""
