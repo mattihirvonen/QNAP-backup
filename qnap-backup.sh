@@ -27,15 +27,13 @@ DRY_RUN=""
 UPDATE=""
 HELP=0
 LOGS=0
-BKUP=0;
+BKUP=0
 TEST=0
 
-backup
 
-while getopts "+hvdlm:bB:s:" opt; do
+while getopts "+hvdlm:b:Bs:" opt; do
   case "$opt" in
-  # ?) HELP=1 ;;
-    +) TEST=1 ;;   # Undocumented command line switch for development test
+    +) TEST=1 ;;
     h) HELP=1 ;;
     l) LOGS=1 ;;
     B) BKUP=1 ;;
@@ -53,8 +51,8 @@ shift $((OPTIND - 1))
 # Define backup destination directory name based on MOUNT point
 DESTINATION=$MOUNT/$BACKUP
 
-# echo "HELP=$HELP VERBOSE=$VERBOSE SRCFILE=$SRCFILE DESTINATION=$DESTINATION"
-# echo "Remaining arguments[$#]: $*  -  1=$1  2=$2  3=$3"
+  echo "HELP=$HELP VERBOSE=$VERBOSE SRCFILE=$SRCFILE DESTINATION=$DESTINATION"
+  echo "Remaining arguments[$#]: $*  -  1=$1  2=$2  3=$3"
 # exit 0
 
 #--------------------------------------------------------------
@@ -154,7 +152,7 @@ check_backup_media () {
 }
 
 
-help () {
+do_help () {
     echo ""
     echo "Usage: $0 [OPTIONS] [source1] [source2] ..."
     echo ""
@@ -189,28 +187,33 @@ do_test () {
 
 #--------------------------------------------------------------
 
+echo "DEBUG1: #=$# *=$$"
+
 if [ $HELP -gt 0 ]; then
-    help
+    do_help
     exit 0
 fi
 
+echo "DEBUG2: #=$# *=$$"
 
 # Test does backup media (directory) exist?
 check_backup_media  $MOUNT
 
+echo "DEBUG3: #=$# *=$$"
 
 # Undocumented test / debug feature
 if [ $TEST -gt 0 ]; then
     do_test
 fi
 
+echo "DEBUG4: #=$# *=$$"
 
 # Get backup source directory names from command line arguments
 if [ $# -gt 0 ]
 then
     for source in $*
     do
-    #   echo "Process backup: $source"
+        echo "Process backup: $source"
         do_backup   $DESTINATION   $source
     done
 fi
