@@ -53,7 +53,7 @@ Rendered pictures together can consume more disk space than original picture !!!
   web server (my TS-419P2, 32 bit arm, 1.9 GHz). Smooth service based strong on pre generated
   different sized pictures and thumbnails (which takes huge amount disk space).
 - *Piwigo* is good compromise between CPU resource requirements and user access rights management.
-  My TS253S is a bit weak to generate 10 "tiles" picture from gallery on the fly to web page
+  My TS-253A is a bit weak to generate 10 "tiles" picture from gallery on the fly to web page
   (original pictures are typically few mgabytes each). My newer Intel N100 CPU based is enough strong
   to render pictures on the fly. Piwigo is designed to use also in large web services.
   Piwigo generates on the fly picture cache to optimize operation to (re)show requested pictures
@@ -61,7 +61,11 @@ Rendered pictures together can consume more disk space than original picture !!!
 
 Exclude following items from backup:
 
-- *\.@__thumb .@__cache* directories
+- *.@__thumb*
+- *.@__cache*
+- *@_twgcache*
+
+Piwigo require more investigation...
 
 
 ### VisualStudio Code pioarduino and PlatformIO Blugin Projects
@@ -71,22 +75,38 @@ There are typically tens to hundreds of of mega bytes library and tools data eac
 This directory tree will regenerate on the fly when change project's configuration file
 (platformio.ini) and rebuild project. It is wise to exclude this work space directory tree from backup.
 
+Exclude from backup:
+
+- *.pio*
+
+
 ### Other IDE Tool Projects
 
 Other IDE tools generate hidden or temporary build time intermediate directories / files.
 
-> JetBrains (jIDEA and PyCharm) create hidden directory ".idea" whic contains project settings.
+- JetBrains (jIDEA and PyCharm) create hidden directory ".idea" whic contains project settings.
   Files in this directory typically take small amount of disk space (no need to exclude).
-> CodeBlocks build process can generate much small annoying small temporary work space
+- CodeBlocks build process can generate many annoying small temporary work space
   directories and files. These directories and files can safely exclude from backup.
+  
+CodeBlocks
+
+- *bin* and *obj* directories contains
+- *Debug* and *Release* subdirectories
+
  
 ### GIT
 
 All data in "hidden" *.git* subdirectory is GIT's local "database" about project's state and history.
 If we exclude this data we also lost project's version control data (no good idea to exclude?).
 
+
 ## ToDo:
 
 Fix:
-> - Do not produce RSYNC log file to external QNAP NTFS destination
-> - PC test run to /tmp FS produce RSYNC log file properly
+- Do not produce RSYNC log file to external QNAP NTFS destination
+- PC test run to /tmp FS produce RSYNC log file properly
+
+Enhancements:
+- Build *rsync* command line by concatening bash shell script variables.
+  This allow more dynamic command line (and offer more features).
