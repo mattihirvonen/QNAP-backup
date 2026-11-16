@@ -90,9 +90,9 @@ do_rsync () {
 
     rsync -av \
           --whole-file --update \
-          --exclude '.pio' --exclude '.git' --exclude '.idea' --exclude '.vscode' \
-          --exclude '*.o'  --exclude '*.obj' \
-          --exclude '.@__thumb' --exclude '.@__cache' \
+          --exclude '.pio' \
+          --exclude 'Debug'  --exclude 'Release' --exclude '*.o'  --exclude '*.obj' \
+          --exclude '.@__thumb' --exclude '.@__cache'  --exclude '@_twgcache'\
           --backup --backup-dir=$BACKUP_DIR \
           --log-file=$LOGFILE \
           $SRC_DIR \
