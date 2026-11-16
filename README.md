@@ -105,7 +105,7 @@ If we exclude this data we also lost project's version control data (no good ide
 
 Note(s):
 
-- Each time make checkout from repository, file's last-modified time change to checkout time.
+- Each time file is checked out from repository, file's last-modified time change to checkout time.
 - RSYNC strategy is to detect which file transfers can skip.
   Comparison based on file size and file's last-modified time.
   
