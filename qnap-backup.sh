@@ -45,7 +45,7 @@ DESTINATION=$MOUNT/$BACKUP
 
 # echo "HELP=$HELP VERBOSE=$VERBOSE SRCFILE=$SRCFILE DESTINATION=$DESTINATION"
 # echo "Remaining arguments[$#]: $*  -  1=$1  2=$2  3=$3"
-# exit
+# exit 0
 
 #--------------------------------------------------------------
 # Some RSYNC options:
@@ -124,7 +124,7 @@ check_backup_media () {
     echo "Use backup destination:  $MOUNT_POINT"
     else
     echo "ERROR: Backup destination $MOUNT_POINT is missing."
-    exit
+    exit 1
     fi
 }
 
@@ -189,6 +189,7 @@ while IFS= read -r line; do
     do_backup  $DESTINATION  $line
 done < "$FILE_PATH"
 
+exit 0
 #---------------------------
 #developmenti time tests
 
