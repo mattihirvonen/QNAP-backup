@@ -25,10 +25,12 @@ VERBOSE=0
 SRCFILE=""
 HELP=0
 LOGS=0
+TEST=0
 
-while getopts "hvlm:b:s:" opt; do
+while getopts "+hvlm:b:s:" opt; do
   case "$opt" in
   # ?) HELP=1 ;;
+    +) TEST=1 ;;   # Undocumented command line switch for development test
     h) HELP=1 ;;
     l) LOGS=1 ;;
     v) VERBOSE=1 ;;
@@ -68,6 +70,10 @@ do_rsync () {
     DST_DIR=$1
     SRC_DIR=$2
 
+    # Create destination directory (if not exist)
+    mkdir -p  $DST_DIR
+
+    # Define log file
     LOGNAME=backup-$TIMESTAMP.log
     LOGFILE=$DST_DIR/$LOGNAME
 
@@ -77,26 +83,36 @@ do_rsync () {
     sleep 1
     fi
 
-#   Not yet find solution to problem:
-#   ---------------------------------
-#   ./qnap-backup.sh: line 47: /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory
-#   sync: can't open '/share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log': No such file or directory
-#   rsync: failed to open log-file /share/HD-PZU3-black/BACKUP/backup-2026-11-15_11-23-20.log: No such file or directory (2)
-
+    # Define RSYNC backup directory
     # RSYNC might backup overwritten files
     BACKUP_DIR=$DST_DIR/BACKUP-rsync
     # Backup suffix (default ~ w/o --backup-dir)
     SUFFIX='.RSYNC'
 
-    rsync -av \
-          --whole-file --update \
-          --exclude '.pio' \
-          --exclude 'Debug'  --exclude 'Release' --exclude '*.o'  --exclude '*.obj' \
-          --exclude '.@__thumb' --exclude '.@__cache'  --exclude '@_twgcache'\
-          --backup --backup-dir=$BACKUP_DIR \
-          --log-file=$LOGFILE \
-          $SRC_DIR \
-          $DST_DIR
+#   DRY_RUN="--dry-run"
+    VERBOSE="-v"
+    LOGDUMP="--log-file=$LOGFILE"
+    UPDATE="--update"
+    BACKUP="--backup --backup-dir=$BACKUP_DIR"
+
+    EXCLUDE="--exclude '.@__thumb'"
+    EXCLUDE="$EXCLUDE --exclude '.pio'"
+
+    COMMAND="rsync $DRY_RUN -a $VERBOSE --whole-file $UPDATE $LOGDUMP $BACKUP $EXCLUDE $SRC_DIR $DST_DIR"
+
+    echo $COMMAND
+    echo ""
+    eval $COMMAND
+
+#   rsync -av \
+#         --whole-file --update \
+#         --exclude '.pio' \
+#         --exclude 'Debug'  --exclude 'Release' --exclude '*.o'  --exclude '*.obj' \
+#         --exclude '.@__thumb' --exclude '@_twgcache'\
+#         --backup --backup-dir=$BACKUP_DIR \
+#         --log-file=$LOGFILE \
+#         $SRC_DIR \
+#         $DST_DIR
 }
 
 
@@ -143,14 +159,38 @@ help () {
 }
 
 #--------------------------------------------------------------
+# Some undocumented development time tests
+
+do_test () {
+    echo ""
+    echo "testing......"
+    echo ""
+
+    # do_backup  $DESTINATION  'raspi'
+    # do_backup  $DESTINATION  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
+    # do_backup  $DESTINATION  '/media/sf_work/hdrcopy'
+
+    # do_backup  $DESTINATION  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
+      do_backup  $DESTINATION  '/share/Multimedia/2016_BensaJaPetrooli'
+}
+
+#--------------------------------------------------------------
 
 if [ $HELP -gt 0 ]; then
     help
     exit 0
 fi
 
+
 # Test does backup media (directory) exist?
 check_backup_media  $MOUNT
+
+
+# Undocumented test / debug feature
+if [ $TEST -gt 0 ]; then
+    do_test
+fi
+
 
 # Get backup source directory names from command line arguments
 if [ $# -gt 0 ]
@@ -189,15 +229,7 @@ while IFS= read -r line; do
     do_backup  $DESTINATION  $line
 done < "$FILE_PATH"
 
-exit 0
-#---------------------------
-#developmenti time tests
+# exit 0
 
-# do_backup  $DESTINATION  'raspi'
-# do_backup  $DESTINATION  'Multitasking-Esp32-HTTP-FTP-Telnet-servers-for-Arduino'
-# do_backup  $DESTINATION  '/media/sf_work/hdrcopy'
-
-# do_backup  $DESTINATION  '/share/CACHEDEV1_DATA/Multimedia/2016_BensaJaPetrooli'
-# do_backup  $DESTINATION  '/share/Multimedia/2016_BensaJaPetrooli'
 
 
