@@ -105,9 +105,10 @@ If we exclude this data we also lost project's version control data (no good ide
 
 Note(s):
 
-- Each time make checkout from repository, file's modified time stamp change to checkout time.
-- RSYNC use calculated block check sums to detect file differences (regardless time stamps)
-
+- Each time make checkout from repository, file's last-modified time change to checkout time.
+- RSYNC strategy is to detect which file transfers can skip.
+  Comparison based on file size and file's last-modified time.
+  
 
 ## ToDo:
 
