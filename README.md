@@ -110,11 +110,47 @@ Note(s):
   Comparison based on file size and file's last-modified time.
   
 
+## Disk Tests and Repair
+
+Some limitations
+
+- Raspberry PI installation (Debian 12 Bookworm) do not contain *gnome-disks* utility.
+- Command line utility **lsblk** and **smartctl** can not find from QNAP firmware
+  (find only from Raspberry PI).
+- https://www.baeldung.com/linux/disk-check-repair-bad-sectors
+
+
+### Command Line Utility "lsblk" and "smartctl"
+
+Example command(s):
+
+- lsblk
+- sudo smartctl -a /dev/sda
+
+Interesting items are 005 , 196 , 197 and 198
+
+
+### Command Line Utility "badblocks"
+
+Command line utility **badblocks** can find from QNAP and Raspberry PI.
+
+Read only test
+> sudo badblocks -v -s /dev/sda > sectorcheck.txt
+
+Non destructive read/write test
+> sudo badblocks -v -n -s /dev/sda > sectorcheck.txt
+
+In the example above, badblocks scans device /dev/sda with -v enabled,
+allowing it to display details about the scan.
+The -n flag specifies the non-destructive read-write mode and
+the -s flag allows the program to show progress in percentage.
+
+Following the operation, we store the results in a text file.
+
+
 ## ToDo:
 
 New command line switces and features
-- *\-v* to enable RSYNC verbose (done)
-- *\-d* to enable RSYNC *--dry-run* (done)
 - *\-s* change to use RSYNC's own *--files-from=FILE* feature
 - *\-e* add to use RSYNC's own *--exclude-from=FILE* feature
 - *\-i* add to use RSYNC's own *--include-from=FILE* feature
